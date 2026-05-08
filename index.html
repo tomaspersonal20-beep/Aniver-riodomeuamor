@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Para a minha Maitê ♡</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Lato:wght@300;400&display=swap');
+
+  *{margin:0;padding:0;box-sizing:border-box;}
+  html,body{width:100%;height:100%;overflow:hidden;background:#0a0010;}
+
+  #site-frame{
+    width:100%;height:100vh;
+    position:relative;overflow:hidden;
+    font-family:'Lato',sans-serif;
+    background:#0a0010;
+  }
+
+  canvas#stars{position:absolute;top:0;left:0;width:100%;height:100%;z-index:0;}
+
+  .page{
+    position:absolute;top:0;left:0;width:100%;height:100%;
+    display:flex;flex-direction:column;align-items:center;justify-content:center;
+    z-index:2;opacity:0;pointer-events:none;
+    transition:opacity 1.2s ease;padding:2rem;text-align:center;
+  }
+  .page.active{opacity:1;pointer-events:all;}
+
+  .page-title{
+    font-family:'Playfair Display',serif;
+    font-size:clamp(1.8rem,4vw,3rem);
+    color:#fff;
+    text-shadow:0 0 30px #c084fc,0 0 60px #c084fc55;
+    margin-bottom:1rem;line-height:1.2;
+  }
+  .page-sub{
+    font-family:'Playfair Display',serif;
+    font-size:clamp(0.9rem,2vw,1.1rem);
+    color:#e9d5ff;font-style:italic;
+    margin-bottom:2rem;line-height:1.7;
+    max-width:560px;
+    text-shadow:0 0 10px #7c3aed55;
+  }
+
+  .heart-big{
+    font-size:4rem;
+    animation:heartbeat 1.4s ease-in-out infinite;
+    display:inline-block;margin-bottom:1rem;
+    filter:drop-shadow(0 0 20px #f472b6);
+  }
+  @keyframes heartbeat{0%,100%{transform:scale(1);}50%{transform:scale(1.15);}}
+
+  .btn{
+    margin-top:1.5rem;
+    padding:0.7rem 2.2rem;
+    border:1.5px solid #c084fc;
+    background:transparent;
+    color:#e9d5ff;
+    border-radius:40px;
+    font-size:1rem;
+    font-family:'Lato',sans-serif;
+    cursor:pointer;
+    transition:all 0.3s;
+    letter-spacing:0.08em;
+  }
+  .btn:hover{background:#c084fc22;box-shadow:0 0 20px #c084fc88;}
+
+  .floating-hearts{
+    position:absolute;top:0;left:0;width:100%;height:100%;
+    pointer-events:none;z-index:1;
+  }
+
+  .love-card{
+    background:rgba(255,255,255,0.05);
+    border:1px solid rgba(192,132,252,0.3);
+    border-radius:20px;
+    padding:1.5rem 2rem;
+    max-width:580px;
+    backdrop-filter:blur(6px);
+    margin-bottom:1rem;
+  }
+
+  .memories-grid{
+    display:flex;flex-direction:column;gap:1rem;
+    max-width:560px;width:100%;
+  }
+  .memory-item{
+    background:rgba(255,255,255,0.05);
+    border-left:3px solid #c084fc;
+    padding:0.8rem 1.2rem;
+    border-radius:0 12px 12px 0;
+    text-align:left;
+  }
+  .memory-icon{font-size:1.4rem;margin-right:0.5rem;}
+
+  .loves-list{
+    display:flex;flex-direction:column;gap:0.8rem;
+    max-width:540px;width:100%;
+  }
+  .love-item{
+    display:flex;align-items:flex-start;gap:0.8rem;
+    background:rgba(255,255,255,0.04);
+    border:1px solid rgba(244,114,182,0.25);
+    border-radius:14px;padding:0.85rem 1.2rem;
+    text-align:left;
+  }
+  .love-num{
+    font-family:'Playfair Display',serif;
+    font-size:1.4rem;color:#f472b6;
+    font-weight:700;min-width:28px;line-height:1;
+  }
+
+  .final-card{
+    background:rgba(255,255,255,0.05);
+    border:1.5px solid rgba(192,132,252,0.4);
+    border-radius:24px;
+    padding:2rem 2.2rem;
+    max-width:600px;width:100%;
+    backdrop-filter:blur(8px);
+  }
+
+  .scroll-inner{
+    max-height:55vh;overflow-y:auto;
+    padding-right:0.5rem;
+    scrollbar-width:thin;scrollbar-color:#c084fc33 transparent;
+  }
+
+  .page-indicator{
+    position:absolute;bottom:18px;left:50%;transform:translateX(-50%);
+    display:flex;gap:8px;z-index:10;
+  }
+  .dot{
+    width:8px;height:8px;border-radius:50%;
+    background:rgba(255,255,255,0.2);
+    transition:all 0.4s;cursor:pointer;
+  }
+  .dot.active{background:#c084fc;box-shadow:0 0 8px #c084fc;}
+
+  .rose{font-size:2rem;animation:float 3s ease-in-out infinite;}
+  @keyframes float{0%,100%{transform:translateY(0);}50%{transform:translateY(-8px);}}
+
+  #page1 .deco{
+    font-size:clamp(5rem,10vw,8rem);
+    position:absolute;opacity:0.06;
+    font-family:'Playfair Display',serif;
+    color:#fff;user-select:none;
+  }
+  #page1 .deco1{top:5%;left:5%;}
+  #page1 .deco2{bottom:5%;right:5%;}
+
+  @keyframes riseHeart{
+    0%{bottom:-40px;opacity:0;}
+    10%{opacity:0.7;}
+    90%{opacity:0.4;}
+    100%{bottom:110%;opacity:0;}
+  }
+</style>
+</head>
+<body>
+<div id="site-frame">
+
+  <canvas id="stars"></canvas>
+  <div class="floating-hearts" id="fh"></div>
+
+  <!-- PAGE 1: CAPA -->
+  <div class="page active" id="page1">
+    <span class="deco deco1">♡</span>
+    <span class="deco deco2">♡</span>
+    <div class="heart-big">♡</div>
+    <div class="page-title">Para a minha Maitê</div>
+    <div class="page-sub">
+      Meu amor. Meu futuro.<br>
+      Há coisas que as palavras mal conseguem alcançar —<br>
+      mas eu vou tentar, porque você merece o mundo.
+    </div>
+    <button class="btn" onclick="goTo(1)">Entrar ✦</button>
+  </div>
+
+  <!-- PAGE 2: NOSSA HISTÓRIA -->
+  <div class="page" id="page2">
+    <div class="rose">🌹</div>
+    <div class="page-title">Nossa história</div>
+    <div class="love-card">
+      <div class="page-sub" style="margin-bottom:0;font-size:0.97rem;">
+        Nos conhecemos na faculdade — dois mundos completamente diferentes se encontrando no lugar certo.<br><br>
+        Eu, nascido na Argentina: família grande, futebol de raiz, o frio nos ossos, o espanhol no coração.<br>
+        Você, brasileira até a alma: o calor, a praia, a música, a comida, aquela energia que só o Brasil tem.<br><br>
+        Tivemos obstáculos. Momentos em que ficar juntos parecia impossível. Mas a gente arriscou — e deu certo.<br><br>
+        <strong style="color:#c084fc;">Desde 28 de junho de 2024</strong>, construímos algo raro: uma junção de culturas, valores e modos de viver
+        que se tornaram <em>um só nós</em>. Um ano e meio de uma loucura linda e verdadeira. ♡
+      </div>
+    </div>
+    <button class="btn" onclick="goTo(2)">Continuar →</button>
+  </div>
+
+  <!-- PAGE 3: O QUE AMO EM VOCÊ -->
+  <div class="page" id="page3">
+    <div class="page-title" style="margin-bottom:1.2rem;">O que eu amo em você</div>
+    <div class="loves-list">
+      <div class="love-item">
+        <div class="love-num">1</div>
+        <div>
+          <div style="color:#f9a8d4;font-size:0.85rem;margin-bottom:3px;">Sua essência</div>
+          <div class="page-sub" style="margin:0;font-size:0.9rem;font-style:normal;">
+            Amo o jeito como você se comunica — simpática, genuína, com um caráter bonito dentro e fora do relacionamento.
+            Você é boa pessoa de uma forma que raramente se encontra.
+          </div>
+        </div>
+      </div>
+      <div class="love-item">
+        <div class="love-num">2</div>
+        <div>
+          <div style="color:#f9a8d4;font-size:0.85rem;margin-bottom:3px;">Sua beleza</div>
+          <div class="page-sub" style="margin:0;font-size:0.9rem;font-style:normal;">
+            Sou apaixonado pelo seu sorriso, pelos seus olhos, pelo seu cabelo, pelas suas curvas.
+            Você é bonita de um jeito que me para.
+          </div>
+        </div>
+      </div>
+      <div class="love-item">
+        <div class="love-num">3</div>
+        <div>
+          <div style="color:#f9a8d4;font-size:0.85rem;margin-bottom:3px;">Seu jeito de ser</div>
+          <div class="page-sub" style="margin:0;font-size:0.9rem;font-style:normal;">
+            Amo seus modos, seus valores, como você enfrenta as situações da vida — com equilíbrio, com leveza, com força.
+            Você me inspira todos os dias.
+          </div>
+        </div>
+      </div>
+    </div>
+    <button class="btn" onclick="goTo(3)" style="margin-top:1rem;">Continuar →</button>
+  </div>
+
+  <!-- PAGE 4: NOSSOS MOMENTOS -->
+  <div class="page" id="page4">
+    <div class="page-title" style="margin-bottom:1rem;">Nossos momentos</div>
+    <div class="memories-grid">
+      <div class="memory-item">
+        <span class="memory-icon">🎈</span>
+        <span style="color:#e9d5ff;font-size:0.9rem;">
+          O pedido de namoro — o sofá cheio de balões, a cesta de chocolate, as fotos impressas e a cartinha.
+          Tudo preparado com amor, só para você.
+        </span>
+      </div>
+      <div class="memory-item">
+        <span class="memory-icon">🚗</span>
+        <span style="color:#e9d5ff;font-size:0.9rem;">
+          As fugas de carro da faculdade — a cidade como nossa, a liberdade de só nos dois,
+          um bar, um quiosque, um caldo de cana no sol.
+        </span>
+      </div>
+      <div class="memory-item">
+        <span class="memory-icon">🍕</span>
+        <span style="color:#e9d5ff;font-size:0.9rem;">
+          A Pizzaria Milano — nossa primeira saída ao público. Você me apresentou a pizza caprese
+          e eu me apaixonei. Por ela, e ainda mais por você.
+        </span>
+      </div>
+      <div class="memory-item">
+        <span class="memory-icon">🌙</span>
+        <span style="color:#e9d5ff;font-size:0.9rem;">
+          A primeira noite juntos — acordar ao seu lado, sem pressa, foi um dos momentos mais bonitos da minha vida.
+        </span>
+      </div>
+      <div class="memory-item">
+        <span class="memory-icon">🏔️</span>
+        <span style="color:#e9d5ff;font-size:0.9rem;">
+          Visconde de Mauá — nossa primeira viagem a sós. Especial de um jeito que não cabe em palavras.
+        </span>
+      </div>
+    </div>
+    <button class="btn" onclick="goTo(4)" style="margin-top:0.8rem;">Carta final →</button>
+  </div>
+
+  <!-- PAGE 5: CARTA FINAL -->
+  <div class="page" id="page5">
+    <div class="page-title" style="margin-bottom:0.8rem;">Para você, Maitê</div>
+    <div class="final-card">
+      <div class="scroll-inner">
+        <div class="page-sub" style="margin:0;font-size:0.93rem;text-align:left;">
+          Maitê,<br><br>
+
+          Existem pessoas que passam pela nossa vida como páginas que viramos depressa, sem guardar nada.
+          E existem pessoas que chegam como um livro que a gente não consegue largar — que a gente lê devagar,
+          com cuidado, sublinhando cada linha porque tudo importa. Você é esse livro.
+          E eu sou o leitor mais apaixonado que você jamais vai ter.<br><br>
+
+          Eu te amo. Mas não do jeito fácil, não do jeito que as palavras costumam carregar quando são ditas sem peso.
+          Eu te amo com a parte de mim que nunca soube muito bem se expressar — aquela parte que fica quieta por fora
+          mas grita por dentro. O "eu te amo" que eu disse a você foi o primeiro que eu disse com o corpo inteiro.
+          Com a voz, com o peito, com a certeza. E foi o único que vai importar para sempre.<br><br>
+
+          O que mais me emociona em nós — e olha que eu sou muito sentimental, você sabe — não é só o amor.
+          É o entendimento. É a forma rara como a gente se acha no meio de tanta diferença. Eu de um lado do mapa,
+          você do outro. Eu com o frio da Argentina nos ossos, você com o calor do Brasil na alma.
+          E mesmo assim, aqui estamos: dividindo as músicas, os gostos, os costumes, as comidas, os silêncios.
+          Construindo uma cultura própria, que não é argentina nem brasileira — é nossa. E isso é extraordinário.<br><br>
+
+          Eu penso no futuro e não tenho medo. Penso e sorrio. Porque o que eu imagino não é um sonho vago —
+          é um plano real, que os dois já estão escrevendo juntos, linha por linha, escolha por escolha.
+          A nossa casa. As nossas manhãs. Os nossos filhos um dia correndo por algum corredor que ainda vamos escolher juntos.
+          Eu dirigindo, você decidindo onde vai cada coisa. Eu consertando o que quebrar, você cuidando da nossa saúde
+          e do nosso lar. Eu te protegendo, você nos fazendo bem.
+          Uma junção que me apaixona fundo — porque ela é real, porque ela é nossa,
+          porque ela foi construída por dois que escolheram um ao outro mesmo quando não era fácil escolher.<br><br>
+
+          Você me apresentou a pizza caprese numa pizzaria qualquer e eu aprendi que o amor mora nos detalhes pequenos.
+          Você encheu minha casa de presença nos dias em que meus pais viajaram e eu aprendi que lar não é um lugar —
+          é uma pessoa. Você foi comigo até Visconde de Mauá e eu aprendi que toda aventura fica maior quando é com você do lado.<br><br>
+
+          Então é isso, Maitê. Não tenho todas as palavras — mas tenho todas as intenções.
+          Tenho a certeza calma e firme de quem sabe o que quer e com quem quer.
+          E o que eu quero é você. Hoje, amanhã, no dia em que a gente finalmente assinar o contrato do nosso apartamento,
+          no dia em que a gente estiver cansado e ainda assim escolher um ao outro,
+          nos dias fáceis e nos difíceis, em tudo o que ainda não tem nome mas que a gente vai viver juntos.<br><br>
+
+          <strong style="color:#f9a8d4;">
+            Te amo com tudo o que eu sou e com tudo o que ainda estou aprendendo a ser — ao seu lado. ♡
+          </strong>
+        </div>
+      </div>
+    </div>
+    <div style="margin-top:1rem;font-size:1.8rem;animation:heartbeat 1.2s infinite;">♡</div>
+  </div>
+
+  <!-- Indicador de páginas -->
+  <div class="page-indicator" id="pi"></div>
+
+</div>
+
+<script>
+  const TOTAL = 5;
+  let cur = 0;
+  const pages = document.querySelectorAll('.page');
+  const pi = document.getElementById('pi');
+
+  for (let i = 0; i < TOTAL; i++) {
+    const d = document.createElement('div');
+    d.className = 'dot' + (i === 0 ? ' active' : '');
+    d.onclick = () => goTo(i);
+    pi.appendChild(d);
+  }
+
+  function goTo(n) {
+    pages[cur].classList.remove('active');
+    document.querySelectorAll('.dot')[cur].classList.remove('active');
+    cur = n;
+    pages[cur].classList.add('active');
+    document.querySelectorAll('.dot')[cur].classList.add('active');
+  }
+
+  // Estrelas animadas
+  const canvas = document.getElementById('stars');
+  const ctx = canvas.getContext('2d');
+  let W, H, stars = [];
+
+  function resize() {
+    W = canvas.width = canvas.offsetWidth;
+    H = canvas.height = canvas.offsetHeight;
+  }
+
+  function mkStars() {
+    stars = [];
+    for (let i = 0; i < 220; i++) {
+      stars.push({
+        x: Math.random() * W,
+        y: Math.random() * H,
+        r: Math.random() * 1.5 + 0.3,
+        a: Math.random(),
+        da: (Math.random() - 0.5) * 0.008
+      });
+    }
+  }
+
+  function drawStars() {
+    ctx.clearRect(0, 0, W, H);
+    stars.forEach(s => {
+      s.a += s.da;
+      if (s.a <= 0 || s.a >= 1) s.da *= -1;
+      ctx.beginPath();
+      ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(255,220,255,${s.a})`;
+      ctx.fill();
+    });
+    requestAnimationFrame(drawStars);
+  }
+
+  resize(); mkStars(); drawStars();
+  window.addEventListener('resize', () => { resize(); mkStars(); });
+
+  // Corações flutuantes
+  const fh = document.getElementById('fh');
+  const emojis = ['♡', '❤', '💜', '💗', '✦'];
+
+  function spawnHeart() {
+    const h = document.createElement('div');
+    const sz = Math.random() * 18 + 10;
+    const x = Math.random() * 100;
+    const dur = Math.random() * 6 + 5;
+    h.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+    h.style.cssText = `
+      position:absolute;left:${x}%;bottom:-40px;font-size:${sz}px;opacity:0;
+      animation:riseHeart ${dur}s linear forwards;pointer-events:none;color:#c084fc;
+    `;
+    fh.appendChild(h);
+    setTimeout(() => h.remove(), (dur + 1) * 1000);
+  }
+
+  setInterval(spawnHeart, 900);
+</script>
+</body>
+</html>
